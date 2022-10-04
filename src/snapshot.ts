@@ -1,18 +1,16 @@
-// @flow
+import { readFileSync, writeFileSync } from 'fs';
+import { diff } from 'jest-diff';
 
-import { readFileSync, writeFileSync } from "fs";
-import diff from "jest-diff";
-
-type Params = {|
-  snapshotPath: string,
-  name: string,
-  data: Object,
-  threshold: number,
-|};
+type Params = {
+  snapshotPath: string;
+  name: string;
+  data: Object;
+  threshold: number;
+};
 
 const readJsonSync = (file) => {
   try {
-    const text = readFileSync(file, "utf-8");
+    const text = readFileSync(file, 'utf-8');
     try {
       return JSON.parse(text);
     } catch (error) {
@@ -24,11 +22,11 @@ const readJsonSync = (file) => {
 };
 
 const writeJsonSync = (file, data) =>
-  writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+  writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
 
-const isObject = (d) => typeof d === "object" && d != null;
+const isObject = (d) => typeof d === 'object' && d != null;
 
-const isNumber = (d) => typeof d === "number";
+const isNumber = (d) => typeof d === 'number';
 
 const compareWithThreshold = (_1, _2, threshold) => {
   const keys1 = Object.keys(_1);
@@ -57,12 +55,12 @@ const compareWithThreshold = (_1, _2, threshold) => {
 export const match = ({ snapshotPath, name, data, threshold }: Params) => {
   const snapshot = readJsonSync(snapshotPath);
   if (snapshot == null) {
-    throw Error("Size snapshot is missing. Please run rollup to create one.");
+    throw Error('Size snapshot is missing. Please run rollup to create one.');
   }
   const prevData = snapshot[name] || {};
   if (!compareWithThreshold(prevData, data, threshold)) {
     console.error(diff(prevData, data));
-    throw Error("Size snapshot is not matched. Run rollup to rebuild one.");
+    throw Error('Size snapshot is not matched. Run rollup to rebuild one.');
   }
 };
 
