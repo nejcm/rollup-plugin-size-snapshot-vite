@@ -1,7 +1,9 @@
 {
   "name": "@nejcm/rollup-plugin-size-snapshot-vite",
-  "version": "0.0.1",
+  "private": false,
+  "version": "0.0.4",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -10,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "tsc && babel dist --out-dir dist",
     "test": "jest",
     "prepublish": "yarn build"
   },
@@ -43,6 +45,9 @@
     "memory-fs": "^0.5.0",
     "terser": "^4.8.1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -51,6 +56,18 @@
   "lint-staged": {
     "*.{js,md}": [
       "prettier --write"
+    ]
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/env",
+        {
+          "targets": {
+            "node": "16"
+          }
+        }
+      ]
     ]
   },
   "jest": {

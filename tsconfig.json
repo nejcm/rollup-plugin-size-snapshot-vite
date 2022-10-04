@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "rootDir": "./src",
-    "module": "ES6",
+    "module": "ESNext",
     "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "dist",
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
@@ -10,5 +12,5 @@
     "types": ["jest", "node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "**/__tests__"]
 }
