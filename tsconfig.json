@@ -6,6 +6,7 @@
     "declaration": true,
     "declarationDir": "dist",
     "noImplicitAny": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
     "sourceMap": false,

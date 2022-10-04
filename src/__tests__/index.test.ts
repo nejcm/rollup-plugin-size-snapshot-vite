@@ -1,13 +1,11 @@
-// @flow
-
 import { readFileSync, unlinkSync } from 'fs';
 import * as path from 'path';
 import { rollup } from 'rollup';
 import { terser } from 'rollup-plugin-terser';
 import stripAnsi from 'strip-ansi';
-import { sizeSnapshot } from '..';
+import { sizeSnapshot } from '../';
 
-process.chdir('tests');
+process.chdir('src/__tests__');
 
 const last = (arr) => arr[Math.max(0, arr.length - 1)];
 
@@ -169,14 +167,11 @@ test("print sizes with treeshaked size for 'esm' format", async () => {
   expect(arg).toContain(
     '  treeshaked with rollup with production NODE_ENV and minified: 0 B\n',
   );
-  expect(arg).toContain(
-    '  treeshaked with webpack in production mode: 951 B\n',
-  );
 
   consoleInfo.mockRestore();
 });
 
-test("write treeshaked with rollup and webpack sizes for 'esm' format", async () => {
+test("write treeshaked with rollup sizes for 'esm' format", async () => {
   const snapshotPath = 'fixtures/rollupTreeshake.size-snapshot.json';
   const snapshot = await runRollup({
     input: './fixtures/redux.js',
@@ -186,15 +181,12 @@ test("write treeshaked with rollup and webpack sizes for 'esm' format", async ()
 
   expect(pullSnapshot(snapshotPath)).toMatchObject({
     'output.js': expect.objectContaining({
-      treeshaked: {
-        rollup: expect.objectContaining({ code: 0 }),
-        webpack: expect.objectContaining({ code: 951 }),
-      },
+      treeshaked: expect.objectContaining({ code: 0 }),
     }),
   });
 });
 
-test('treeshake pure annotations with rollup and terser or webpack', async () => {
+test('treeshake pure annotations with rollup and terser', async () => {
   const snapshotPath = 'fixtures/pure-annotated.size-snapshot.json';
   await runRollup({
     input: './fixtures/pure-annotated.js',
@@ -204,15 +196,12 @@ test('treeshake pure annotations with rollup and terser or webpack', async () =>
 
   expect(pullSnapshot(snapshotPath)).toMatchObject({
     'output.js': expect.objectContaining({
-      treeshaked: {
-        rollup: expect.objectContaining({ code: 0 }),
-        webpack: expect.objectContaining({ code: 951 }),
-      },
+      treeshaked: expect.objectContaining({ code: 0 }),
     }),
   });
 });
 
-test('treeshake with both rollup or webpack and external modules', async () => {
+test('treeshake with both rollup and external modules', async () => {
   const snapshotPath = 'fixtures/externals.size-snapshot.json';
   await runRollup({
     input: './fixtures/externals.js',
@@ -223,15 +212,12 @@ test('treeshake with both rollup or webpack and external modules', async () => {
 
   expect(pullSnapshot(snapshotPath)).toMatchObject({
     'output.js': expect.objectContaining({
-      treeshaked: {
-        rollup: expect.objectContaining({ code: 14 }),
-        webpack: expect.objectContaining({ code: 1016 }),
-      },
+      treeshaked: expect.objectContaining({ code: 14 }),
     }),
   });
 });
 
-test('rollup treeshake should replace NODE_ENV in symmetry to webpack', async () => {
+test('rollup treeshake should replace NODE_ENV in symmetry', async () => {
   const snapshotPath = 'fixtures/node_env.size-snapshot.json';
   await runRollup({
     input: './fixtures/node_env.js',
@@ -241,27 +227,7 @@ test('rollup treeshake should replace NODE_ENV in symmetry to webpack', async ()
 
   expect(pullSnapshot(snapshotPath)).toMatchObject({
     'output.js': expect.objectContaining({
-      treeshaked: {
-        rollup: expect.objectContaining({ code: 0 }),
-        webpack: expect.objectContaining({ code: 951 }),
-      },
-    }),
-  });
-});
-
-test('webpack does not provide node shims', async () => {
-  const snapshotPath = 'fixtures/node-shims.size-snapshot.json';
-  await runRollup({
-    input: './fixtures/node-shims.js',
-    output: { file: 'fixtures/output.js', format: 'esm' },
-    plugins: [sizeSnapshot({ snapshotPath, printInfo: false })],
-  });
-
-  expect(pullSnapshot(snapshotPath)).toMatchObject({
-    'output.js': expect.objectContaining({
-      treeshaked: expect.objectContaining({
-        webpack: { code: 1071 },
-      }),
+      treeshaked: expect.objectContaining({ code: 0 }),
     }),
   });
 });
@@ -279,7 +245,8 @@ test('rollup treeshaker shows imports size', async () => {
   expect(pullSnapshot(snapshotPath)).toMatchObject({
     'output.js': expect.objectContaining({
       treeshaked: expect.objectContaining({
-        rollup: { code: 303, import_statements: 303 },
+        code: 303,
+        import_statements: 303,
       }),
     }),
   });
@@ -389,12 +356,12 @@ test('handle umd with esm', async () => {
 
   expect(snapshot).toMatchObject({
     'output.js': {
-      bundled: 330,
-      minified: 206,
-      gzipped: 139,
+      bundled: 269,
+      minified: 188,
+      gzipped: 137,
       treeshaked: {
-        rollup: { code: 162 },
-        webpack: { code: 1260 },
+        code: 154,
+        import_statements: 0,
       },
     },
   });

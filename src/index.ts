@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import gzipSize from 'gzip-size';
 import { join } from 'path';
 import { minify } from 'terser';
-import * as snapshot from './snapshot.js';
-import { treeshakeWithRollup } from './treeshakeWithRollup.js';
+import * as snapshot from './snapshot';
+import { treeshakeWithRollup } from './treeshakeWithRollup';
 
 type Options = {
   minify?: boolean;
@@ -76,7 +76,7 @@ export const sizeSnapshot = (options: Options = {}): Plugin => {
   return {
     name: 'size-snapshot',
 
-    renderChunk(rawSource, chunk, outputOptions) {
+    async renderChunk(rawSource, chunk, outputOptions) {
       // remove windows specific newline character
       const source = rawSource.replace(/\r/g, '');
       const format = outputOptions.format;
@@ -84,7 +84,7 @@ export const sizeSnapshot = (options: Options = {}): Plugin => {
 
       const outputName = chunk.fileName;
 
-      const minified = minify(source).code || '';
+      const minified = (await minify(source)).code || '';
       const treeshakeSize = (code: string) =>
         Promise.all([treeshakeWithRollup(code)]);
 
