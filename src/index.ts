@@ -1,3 +1,4 @@
+import { Options as AcornOptions } from 'acorn';
 import bytes from 'bytes';
 import chalk from 'chalk';
 import gzipSize from 'gzip-size';
@@ -7,12 +8,11 @@ import * as snapshot from './snapshot';
 import { treeshakeWithRollup } from './treeshakeWithRollup';
 
 type Options = {
-  minify?: boolean;
-  snapshot?: string;
   snapshotPath?: string;
   matchSnapshot?: boolean;
   threshold?: number;
   printInfo?: boolean;
+  parseOptions?: AcornOptions;
 };
 
 type OutputOptions = {
@@ -42,6 +42,7 @@ const validateOptions = (options: any) => {
     'matchSnapshot',
     'threshold',
     'printInfo',
+    'parseOptions',
   ];
 
   const invalidKeys = Object.keys(options).filter(
@@ -86,7 +87,7 @@ export const sizeSnapshot = (options: Options = {}): Plugin => {
 
       const minified = (await minify(source)).code || '';
       const treeshakeSize = (code: string) =>
-        Promise.all([treeshakeWithRollup(code)]);
+        Promise.all([treeshakeWithRollup(code, options.parseOptions)]);
 
       return Promise.all([
         gzipSize(minified),

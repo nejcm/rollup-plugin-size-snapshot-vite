@@ -1,5 +1,5 @@
 import replace from '@rollup/plugin-replace';
-import { parse } from 'acorn';
+import { Options, parse } from 'acorn';
 import { rollup } from 'rollup';
 import { minify } from 'terser';
 
@@ -32,7 +32,10 @@ const resolvePlugin = ({ code }) => ({
   },
 });
 
-export const treeshakeWithRollup = (code: string): Promise<Output> => {
+export const treeshakeWithRollup = (
+  code: string,
+  parseOptions?: Options,
+): Promise<Output> => {
   const config = {
     name: 'rollup-plugin-size-snapshot-vite',
     input: `/${inputName}`,
@@ -54,21 +57,23 @@ export const treeshakeWithRollup = (code: string): Promise<Output> => {
         },
       ),
     )
-    .then(
-      (result): Output => {
-        const { code = '' } = result;
-        const ast = parse(code, { sourceType: 'module' }) as any;
-        const import_statements = ast.body
-          // collect all toplevel import statements
-          .filter((node) => node.type === 'ImportDeclaration')
-          // endpos is the next character after node -> substract 1
-          .map((node) => node.end - node.start)
-          .reduce((acc, size) => acc + size, 0);
+    .then((result): Output => {
+      const { code = '' } = result;
+      const ast = parse(code, {
+        sourceType: 'module',
+        ecmaVersion: 11,
+        ...parseOptions,
+      }) as any;
+      const import_statements = ast.body
+        // collect all toplevel import statements
+        .filter((node) => node.type === 'ImportDeclaration')
+        // endpos is the next character after node -> substract 1
+        .map((node) => node.end - node.start)
+        .reduce((acc, size) => acc + size, 0);
 
-        return {
-          code: code.length,
-          import_statements,
-        };
-      },
-    );
+      return {
+        code: code.length,
+        import_statements,
+      };
+    });
 };
