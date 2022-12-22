@@ -1,8 +1,8 @@
-# rollup-plugin-size-snapshot
+# rollup-plugin-size-snapshot-vite
 
 <img src="example2.png" />
 
-This plugin provides details about
+This plugin supports vite and provides details about
 
 - actual bundle size (bundler parsing size)
 - minified bundle size (browser parsing size)
